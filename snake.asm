@@ -4,16 +4,22 @@ locals
 
 .data
 
-    head_x          dw  10
-    head_y          dw  20
+    start_head_x    dw  10
+    start_head_y    dw  20
+
+    head_x          dw  ?
+    head_y          dw  ?
     head_dx         dw  1
     head_dy         dw  0
 
+    curr_len        dw  3
     curr_speed      dw  10
 
     head_color      db  20
 
     delay           dd  600000
+    min_delay       dd  100000
+    max_delay       dd  1200000
 
 
 .code
@@ -23,11 +29,14 @@ locals
 start:
     jmp     main
     include graphics.asm
+    include keyboard.asm
 
 main:
     call    store_mode_n_page
     call    set_mode_n_page
 
+    call    prepare_map
+    call    prepare_snake
     call    main_loop
 
     call    restore_mode_n_page
@@ -36,15 +45,9 @@ main:
 
 main_loop proc near
 
-    mov     cx, head_x
-    mov     dx, head_y
-    mov     al, head_color
-
-    call    draw_cell
-
 @@game_loop:
     call    wait
-    call    poll_keyboard
+    call    handle_keyboard
     call    move_head
     jmp     @@game_loop
 
@@ -87,52 +90,28 @@ move_head proc near
 move_head endp
 
 
-poll_keyboard proc near
+prepare_map proc near
 
-    ; check if no keys
-    mov     ah, 01h
-    int     16h
-    jz      @@exit
-
-    xor     ax, ax
-    int     16h
-
-@@maybe_j:
-    ; j is for down
-    ; head_dx = 0 && head_dy = 1
-    cmp     al, 6ah
-    jne     @@maybe_k
-    mov     head_dx, 0
-    mov     head_dy, 1
-
-@@maybe_k:
-    ; k is for up
-    ; head_dx = 0 && head_dy = -1
-    cmp     al, 6bh
-    jne     @@maybe_h
-    mov     head_dx, 0
-    mov     head_dy, -1
-
-@@maybe_h:
-    ; h is for left
-    ; head_dx = -1 && head_dy = 0
-    cmp     al, 68h
-    jne     @@maybe_l
-    mov     head_dx, -1
-    mov     head_dy, 0
-
-@@maybe_l:
-    ; l is for left
-    ; head_dx = 1 && head_dy = 0
-    cmp     al, 6ch
-    jne     @@exit
-    mov     head_dx, 1
-    mov     head_dy, 0
-
-@@exit:
     ret
 
-poll_keyboard endp
+prepare_map endp
+
+
+prepare_snake proc near
+
+    mov     cx, start_head_x
+    mov     dx, start_head_y
+
+    mov     head_x, cx
+    mov     head_y, dx
+
+    mov     al, head_color
+
+    call    draw_cell
+
+    ret
+
+prepare_snake endp
 
 
 wait proc near
