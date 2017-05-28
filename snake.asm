@@ -6,7 +6,10 @@ locals
 
     head_x          dw  10
     head_y          dw  20
+    head_color      db  20
+
     delay           dd  600000
+
 
 .code
 
@@ -28,13 +31,15 @@ main:
 
 main_loop proc near
 
-@@game_loop:
     mov     cx, head_x
     mov     dx, head_y
-    mov     al, 20
+    mov     al, head_color
+
     call    draw_cell
-    call    change_head_xy
+
+@@game_loop:
     call    wait
+    call    move_head
     jmp     @@game_loop
 
     ret
@@ -42,20 +47,27 @@ main_loop proc near
 main_loop endp
 
 
-change_head_xy proc near
+move_head proc near
 
-    mov     ax, head_x
-    mov     bx, head_y
+    mov     cx, head_x
+    mov     dx, head_y
 
-    add     ax, 10
-    add     bx, 10
+    call    empty_cell
 
-    mov     head_x, ax
-    mov     head_y, bx
+    mov     al, head_color
+
+    ; change head coords
+    add     cx, 10
+    add     dx, 10
+
+    mov     head_x, cx
+    mov     head_y, dx
+
+    call    draw_cell
 
     ret
 
-change_head_xy endp
+move_head endp
 
 
 wait proc near
