@@ -13,7 +13,7 @@ handle_keyboard proc near
 @@maybe_j:
     ; j is for down
     ; head_dx = 0 && head_dy = 1
-    cmp     al, 6ah
+    cmp     ah, 24h
     jne     @@maybe_k
     mov     head_dx, 0
     mov     head_dy, 1
@@ -21,7 +21,7 @@ handle_keyboard proc near
 @@maybe_k:
     ; k is for up
     ; head_dx = 0 && head_dy = -1
-    cmp     al, 6bh
+    cmp     ah, 25h
     jne     @@maybe_h
     mov     head_dx, 0
     mov     head_dy, -1
@@ -29,7 +29,7 @@ handle_keyboard proc near
 @@maybe_h:
     ; h is for left
     ; head_dx = -1 && head_dy = 0
-    cmp     al, 68h
+    cmp     ah, 23h
     jne     @@maybe_l
     mov     head_dx, -1
     mov     head_dy, 0
@@ -37,17 +37,14 @@ handle_keyboard proc near
 @@maybe_l:
     ; l is for left
     ; head_dx = 1 && head_dy = 0
-    cmp     al, 6ch
+    cmp     ah, 26h
     jne     @@maybe_plus
     mov     head_dx, 1
     mov     head_dy, 0
 
 @@maybe_plus:
-    cmp     al, 2bh
-    je      @@plus_exactly
-    cmp     al, 3dh
+    cmp     ah, 0dh
     jne     @@maybe_minus
-@@plus_exactly:
     mov     dx, word ptr delay+2
     shr     dx, 1
     cmp     dx, word ptr min_delay+2
@@ -55,13 +52,19 @@ handle_keyboard proc near
     mov     word ptr delay+2, dx
 
 @@maybe_minus:
-    cmp     al, 2dh
-    jne     @@exit
+    cmp     ah, 0ch
+    jne     @@maybe_Cc
     mov     dx, word ptr delay+2
     shl     dx, 1
     cmp     dx, word ptr max_delay+2
     jge     @@exit
     mov     word ptr delay+2, dx
+
+@@maybe_Cc:
+    cmp     ah, 2eh
+    jne     @@exit
+    call    restore_mode_n_page
+    call    quit
 
 @@exit:
     ret

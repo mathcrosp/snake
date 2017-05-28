@@ -12,13 +12,15 @@ locals
     head_dx         dw  1
     head_dy         dw  0
 
+    max_len         dw  30
     curr_len        dw  3
+
     curr_speed      dw  10
 
     head_color      db  20
 
-    delay           dd  600000
-    min_delay       dd  100000
+    delay           dd  500000
+    min_delay       dd  50000
     max_delay       dd  1200000
 
 
