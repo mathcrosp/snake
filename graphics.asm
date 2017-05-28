@@ -41,6 +41,36 @@ set_mode_n_page proc near
 set_mode_n_page endp
 
 
+restore_mode_n_page proc near
+
+    mov     dl, 0
+    mov     ah, 02h
+    int     10h
+
+    mov     al, old_mode
+    mov     ah, 0
+    int     10h
+
+    mov     al, old_page
+    mov     ah, 05h
+    int     10h
+
+    ret
+
+restore_mode_n_page endp
+
+
+draw_pixel proc near
+
+    mov     ah, 0ch
+    mov     bh, curr_page
+    int     10h
+
+    ret
+
+draw_pixel endp
+
+
 draw_cell proc near
 
     mov		bx, [cell_size]
@@ -77,33 +107,13 @@ cell_fill_loop:
 draw_cell endp
 
 
-draw_pixel proc near
+empty_cell proc near
 
-    mov     ah, 0ch
-    mov     bh, curr_page
-    int     10h
-
-    ret
-
-draw_pixel endp
-
-
-restore_mode_n_page proc near
-
-    mov     dl, 0
-    mov     ah, 02h
-    int     10h
-
-    mov     al, old_mode
-    mov     ah, 0
-    int     10h
-
-    mov     al, old_page
-    mov     ah, 05h
-    int     10h
+    mov     al, 0
+    call    draw_cell
 
     ret
 
-restore_mode_n_page endp
+empty_cell endp
 
 
