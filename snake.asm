@@ -6,7 +6,7 @@ locals
 
     head_x          dw  10
     head_y          dw  20
-
+    delay           dd  600000
 
 .code
 
@@ -28,15 +28,46 @@ main:
 
 main_loop proc near
 
+@@game_loop:
     mov     cx, head_x
     mov     dx, head_y
     mov     al, 20
     call    draw_cell
-    call    wait_for_key
+    call    change_head_xy
+    call    wait
+    jmp     @@game_loop
 
     ret
 
 main_loop endp
+
+
+change_head_xy proc near
+
+    mov     ax, head_x
+    mov     bx, head_y
+
+    add     ax, 10
+    add     bx, 10
+
+    mov     head_x, ax
+    mov     head_y, bx
+
+    ret
+
+change_head_xy endp
+
+
+wait proc near
+
+    mov		ax, 8600h
+    mov		cx, word ptr delay+2
+    mov		dx, word ptr delay
+    int		15h
+
+    ret
+
+wait endp
 
 
 wait_for_key proc near
