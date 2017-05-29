@@ -33,6 +33,7 @@ start:
     include graphics.asm
     include keyboard.asm
     include sound.asm
+    include wall.asm
 
 main:
     call    store_mode_n_page
@@ -42,9 +43,7 @@ main:
     call    prepare_snake
     call    main_loop
 
-    call    restore_mode_n_page
-    call    quit
-
+    call    game_over
 
 main_loop proc near
 
@@ -94,8 +93,9 @@ move_head proc near
 
     mov     cx, head_x
     mov     dx, head_y
-    mov     al, snake_color
+    call    wall_check
 
+    mov     al, snake_color
     call    draw_cell
 
     ret
@@ -104,6 +104,11 @@ move_head endp
 
 
 prepare_map proc near
+
+    call    draw_top_wall
+    call    draw_bottom_wall
+    call    draw_left_wall
+    call    draw_right_wall
 
     ret
 
@@ -153,6 +158,16 @@ dec_speed proc near
     ret
 
 dec_speed endp
+
+
+game_over proc near
+
+    call    restore_mode_n_page
+    call    quit
+
+    ret
+
+game_over endp
 
 
 wait proc near
