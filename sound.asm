@@ -23,6 +23,10 @@ beep endp
 
 set_freq proc near
 
+    push    ax
+    push    bx
+    push    cx
+
     mov     bx, ax
 
     mov     al, 182
@@ -44,6 +48,10 @@ set_freq proc near
     jne     @@pause2
     dec     bx
     jne     @@pause1
+
+    pop     cx
+    pop     bx
+    pop     ax
 
     ret
 

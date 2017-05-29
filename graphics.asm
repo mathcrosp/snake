@@ -61,9 +61,15 @@ restore_mode_n_page endp
 
 draw_pixel proc near
 
+    push    ax
+    push    bx
+
     mov     ah, 0ch
     mov     bh, curr_page
     int     10h
+
+    pop     bx
+    pop     ax
 
     ret
 
@@ -71,6 +77,11 @@ draw_pixel endp
 
 
 draw_cell proc near
+
+    push    ax
+    push    bx
+    push    cx
+    push    dx
 
     mov		bx, [cell_size]
     add		bx, cx
@@ -101,6 +112,11 @@ cell_fill_loop:
 
     pop		cx
 
+    pop     dx
+    pop     cx
+    pop     bx
+    pop     ax
+
     ret
 
 draw_cell endp
@@ -108,8 +124,12 @@ draw_cell endp
 
 empty_cell proc near
 
+    push    ax
+
     mov     al, 0
     call    draw_cell
+
+    pop     ax
 
     ret
 
