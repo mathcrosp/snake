@@ -4,23 +4,25 @@ locals
 
 .data
 
-    start_head_x    dw  10
-    start_head_y    dw  20
+    max_len         equ  30
+    curr_len        dw  3
+
+    start_head_x    equ  100
+    start_head_y    equ  120
+    snake_xs        dw  max_len*2 dup(start_head_x)
+    snake_ys        dw  max_len*2 dup(start_head_y)
 
     head_x          dw  ?
     head_y          dw  ?
     head_dx         dw  1
     head_dy         dw  0
 
-    max_len         dw  30
-    curr_len        dw  3
+    cell_size       dw  10
 
-    curr_speed      dw  10
+    snake_color      db  14
 
-    head_color      db  20
-
-    delay           dd  500000
-    min_delay       dd  50000
+    delay           dd  400000
+    min_delay       dd  49000
     max_delay       dd  1200000
 
 
@@ -32,6 +34,7 @@ start:
     jmp     main
     include graphics.asm
     include keyboard.asm
+    include sound.asm
 
 main:
     call    store_mode_n_page
@@ -48,14 +51,24 @@ main:
 main_loop proc near
 
 @@game_loop:
-    call    wait
     call    handle_keyboard
-    call    move_head
+    call    move_snake
+    call    wait
     jmp     @@game_loop
 
     ret
 
 main_loop endp
+
+
+move_snake proc near
+
+    call    move_head
+    call    step_beep
+
+    ret
+
+move_snake endp
 
 
 move_head proc near
@@ -68,14 +81,14 @@ move_head proc near
 
     ; fill new position
     mov     cx, head_x
-    mov     bx, curr_speed
+    mov     bx, cell_size
     mov     ax, head_dx
     imul    bl
     add     cx, ax
     mov     head_x, cx
 
     mov     cx, head_y
-    mov     bx, curr_speed
+    mov     bx, cell_size
     mov     ax, head_dy
     imul    bl
     add     cx, ax
@@ -83,7 +96,7 @@ move_head proc near
 
     mov     cx, head_x
     mov     dx, head_y
-    mov     al, head_color
+    mov     al, snake_color
 
     call    draw_cell
 
@@ -107,7 +120,7 @@ prepare_snake proc near
     mov     head_x, cx
     mov     head_y, dx
 
-    mov     al, head_color
+    mov     al, snake_color
 
     call    draw_cell
 

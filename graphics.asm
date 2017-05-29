@@ -6,7 +6,6 @@ old_page        db  ?
 curr_mode       db  10h
 curr_page       db  0
 
-cell_size       dw  10
 end_x           dw  ?
 end_y           dw  ?
 
