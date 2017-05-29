@@ -18,10 +18,13 @@ locals
     cell_size       dw  10
 
     snake_color     db  14
+    wall_color      db  4
 
     delay           dd  400000
     min_delay       dd  49000
     max_delay       dd  1200000
+
+    game_over_msg   db  "GAME OVER", 0dh, 0ah, 24h
 
 
 .code
@@ -161,6 +164,27 @@ dec_speed endp
 
 
 game_over proc near
+
+    mov     dh, 12
+    lea     bp, game_over_msg
+    mov     cx, 9
+
+    mov		ah, 0fh
+    int		10h
+
+    sub		ah, cl
+    shr		ax, 8
+    mov		bl, 2
+    div		bl
+    mov		dl, al
+
+    mov		bh, curr_page
+    mov		bl, snake_color
+    mov		al, 1
+    mov		ah, 13h
+    int 	10h
+
+    call    wait_for_key
 
     call    restore_mode_n_page
     call    quit
