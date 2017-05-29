@@ -2,6 +2,7 @@
 
 handle_keyboard proc near
 
+@@check:
     ; check if no keys
     mov     ah, 01h
     int     16h
@@ -17,6 +18,7 @@ handle_keyboard proc near
     jne     @@maybe_k
     mov     head_dx, 0
     mov     head_dy, 1
+    jmp     @@check
 
 @@maybe_k:
     ; k is for up
@@ -25,6 +27,7 @@ handle_keyboard proc near
     jne     @@maybe_h
     mov     head_dx, 0
     mov     head_dy, -1
+    jmp     @@check
 
 @@maybe_h:
     ; h is for left
@@ -33,6 +36,7 @@ handle_keyboard proc near
     jne     @@maybe_l
     mov     head_dx, -1
     mov     head_dy, 0
+    jmp     @@check
 
 @@maybe_l:
     ; l is for left
@@ -41,28 +45,23 @@ handle_keyboard proc near
     jne     @@maybe_plus
     mov     head_dx, 1
     mov     head_dy, 0
+    jmp     @@check
 
 @@maybe_plus:
     cmp     ah, 0dh
     jne     @@maybe_minus
-    mov     dx, word ptr delay+2
-    shr     dx, 1
-    cmp     dx, word ptr min_delay+2
-    jle     @@exit
-    mov     word ptr delay+2, dx
+    call    inc_speed
+    jmp     @@check
 
 @@maybe_minus:
     cmp     ah, 0ch
     jne     @@maybe_Cc
-    mov     dx, word ptr delay+2
-    shl     dx, 1
-    cmp     dx, word ptr max_delay+2
-    jge     @@exit
-    mov     word ptr delay+2, dx
+    call    dec_speed
+    jmp     @@check
 
 @@maybe_Cc:
     cmp     ah, 2eh
-    jne     @@exit
+    jne     @@check
     call    restore_mode_n_page
     call    quit
 

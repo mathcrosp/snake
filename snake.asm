@@ -5,12 +5,10 @@ locals
 .data
 
     max_len         equ  30
-    curr_len        dw  3
+    curr_len        dw  8
 
     start_head_x    equ  100
     start_head_y    equ  120
-    snake_xs        dw  max_len*2 dup(start_head_x)
-    snake_ys        dw  max_len*2 dup(start_head_y)
 
     head_x          dw  ?
     head_y          dw  ?
@@ -19,7 +17,7 @@ locals
 
     cell_size       dw  10
 
-    snake_color      db  14
+    snake_color     db  14
 
     delay           dd  400000
     min_delay       dd  49000
@@ -127,6 +125,34 @@ prepare_snake proc near
     ret
 
 prepare_snake endp
+
+
+inc_speed proc near
+
+    mov     dx, word ptr delay+2
+    shr     dx, 1
+    cmp     dx, word ptr min_delay+2
+    jle     @@exit
+    mov     word ptr delay+2, dx
+
+@@exit:
+    ret
+
+inc_speed endp
+
+
+dec_speed proc near
+
+    mov     dx, word ptr delay+2
+    shl     dx, 1
+    cmp     dx, word ptr max_delay+2
+    jge     @@exit
+    mov     word ptr delay+2, dx
+
+@@exit:
+    ret
+
+dec_speed endp
 
 
 wait proc near
