@@ -328,11 +328,21 @@ dec_speed endp
 
 change_dir_down proc near
 
+    push    ax
+
+    mov     ax, 1
+    add     ax, head_dy
+    test    ax, ax
+    jnz     @@change_dir
+    call    game_over
+
+@@change_dir:
     ; head_dx = 0 && head_dy = 1
     mov     head_dx, 0
     mov     head_dy, 1
 
-@@exit:
+    pop     ax
+
     ret
 
 change_dir_down endp
@@ -340,11 +350,21 @@ change_dir_down endp
 
 change_dir_up proc near
 
+    push    ax
+
+    mov     ax, -1
+    add     ax, head_dy
+    test    ax, ax
+    jnz     @@change_dir
+    call    game_over
+
+@@change_dir:
     ; head_dx = 0 && head_dy = -1
     mov     head_dx, 0
     mov     head_dy, -1
 
-@@exit:
+    pop     ax
+
     ret
 
 change_dir_up endp
@@ -352,11 +372,21 @@ change_dir_up endp
 
 change_dir_right proc near
 
-    ; head_dx = -1 && head_dy = 0
+    push    ax
+
+    mov     ax, 1
+    add     ax, head_dx
+    test    ax, ax
+    jnz     @@change_dir
+    call    game_over
+
+@@change_dir:
+    ; head_dx = 1 && head_dy = 0
     mov     head_dx, 1
     mov     head_dy, 0
 
-@@exit:
+    pop     ax
+
     ret
 
 change_dir_right endp
@@ -364,11 +394,22 @@ change_dir_right endp
 
 change_dir_left proc near
 
-    ; head_dx = 1 && head_dy = 0
+    push    ax
+
+    mov     ax, -1
+    add     ax, head_dx
+    test    ax, ax
+    jnz     @@change_dir
+    call    game_over
+
+
+@@change_dir:
+    ; head_dx = -1 && head_dy = 0
     mov     head_dx, -1
     mov     head_dy, 0
 
-@@exit:
+    pop     ax
+
     ret
 
 change_dir_left endp
