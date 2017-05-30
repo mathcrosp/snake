@@ -31,7 +31,7 @@ locals
     text_color      db  14
     wall_color      db  4
 
-    delay       dd  400000
+    delay           dd  400000
     min_delay       dd  49000
     max_delay       dd  1200000
 
@@ -116,14 +116,6 @@ prepare_snake proc near
     sub     cl, 7fh
     mov     body_color, cl
 
-    mov     cx, start_head_x
-    mov     dx, start_head_y
-
-    mov     head_x, cx
-    mov     head_y, dx
-
-    mov     al, snake_color
-
     call    init_snake
     call    draw_snake
 
@@ -179,6 +171,7 @@ update_head proc near
     mov     cx, head_x
     mov     dx, head_y
     call    wall_check
+    call    cut_check
 
     pop     dx
     pop     cx
@@ -241,6 +234,53 @@ update_tail proc near
 update_tail endp
 
 
+cut_check proc near
+
+    push    bx
+    push    cx
+    push    dx
+
+    mov     bx, 2
+
+@@checking_loop:
+    cmp     bx, [curr_len]
+    je      @@exit
+    mov     cx, snake_xs[bx]
+    mov     dx, snake_ys[bx]
+    cmp     cx, head_x
+    jne     @@continue
+    cmp     dx, head_y
+    je      @@cut
+@@continue:
+    add     bx, 2
+    jmp     @@checking_loop
+
+@@cut:
+    push    bx
+@@cutting_loop:
+    cmp     bx, [curr_len]
+    je      @@stop_cutting
+    mov     cx, snake_xs[bx]
+    mov     dx, snake_ys[bx]
+    call    empty_cell
+    add     bx, 2
+    jmp     @@cutting_loop
+@@stop_cutting:
+    pop     bx
+    add     bx, 2
+    mov     curr_len, bx
+
+@@exit:
+
+    pop     dx
+    pop     cx
+    pop     bx
+
+    ret
+
+cut_check endp
+
+
 draw_snake proc near
 
     push    bx
@@ -249,17 +289,15 @@ draw_snake proc near
 
     mov     bx, 0
 
-@@draw_loop:
+@@drawing_loop:
     cmp     bx, [curr_len]
     je      @@exit
     mov     cx, snake_xs[bx]
     mov     dx, snake_ys[bx]
-    push    bx
     mov     al, snake_color
     call    draw_body
-    pop     bx
     add     bx, 2
-    jmp     @@draw_loop
+    jmp     @@drawing_loop
 
 @@exit:
     mov     cx, snake_xs[0]
