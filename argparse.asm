@@ -43,8 +43,18 @@ parse_args proc near
 
 @@next_3:
     cmp     al, 68h ; h: help
-    jne     @@next_l
+    jne     @@next_4
     call    show_help_and_quit
+
+@@next_4:
+    cmp     al, 44h ; D: die
+    jne     @@next_5
+    call    set_die_on_cut
+
+@@next_5:
+    cmp     al, 64h ; d: die
+    jne     @@next_l
+    call    set_die_on_cut
 
 @@next_l:
     loop    @@arg_processing

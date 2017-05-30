@@ -35,6 +35,8 @@ locals
     min_delay       dd  49000
     max_delay       dd  1200000
 
+    die_on_cut      db  0
+
     game_over_msg   db  "GAME OVER", 0dh, 0ah, 24h
     cli_help_msg    db  "snake.com [/c N] [/h]", 0dh, 0ah, 24h
 
@@ -236,6 +238,7 @@ update_tail endp
 
 cut_check proc near
 
+    push    ax
     push    bx
     push    cx
     push    dx
@@ -256,6 +259,9 @@ cut_check proc near
     jmp     @@checking_loop
 
 @@cut:
+    mov     al, die_on_cut
+    cmp     al, 1
+    je      @@die
     push    bx
 @@cutting_loop:
     cmp     bx, [curr_len]
@@ -267,7 +273,6 @@ cut_check proc near
     jmp     @@cutting_loop
 @@stop_cutting:
     pop     bx
-    add     bx, 2
     mov     curr_len, bx
 
 @@exit:
@@ -275,8 +280,12 @@ cut_check proc near
     pop     dx
     pop     cx
     pop     bx
+    pop     ax
 
     ret
+
+@@die:
+    call    game_over
 
 cut_check endp
 
@@ -362,6 +371,20 @@ dec_speed proc near
     ret
 
 dec_speed endp
+
+
+set_die_on_cut proc near
+
+    push    ax
+
+    mov     al, 1
+    mov     die_on_cut, al
+
+    pop     ax
+
+    ret
+
+set_die_on_cut endp
 
 
 change_dir_down proc near
