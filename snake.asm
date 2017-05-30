@@ -6,7 +6,7 @@ locals
 .data
 
     max_len     equ  30
-    curr_len    dw  8
+    curr_len    dw  16
 
     start_head_x    equ  100
     start_head_y    equ  120
@@ -273,6 +273,8 @@ cut_check proc near
     jmp     @@cutting_loop
 @@stop_cutting:
     pop     bx
+    cmp     bx, 2
+    je      @@die
     mov     curr_len, bx
 
 @@exit:
