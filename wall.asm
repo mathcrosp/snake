@@ -2,7 +2,6 @@
 
 draw_top_wall proc near
 
-    ; wall color
     mov     al, wall_color
 
     mov     bx, 0
@@ -24,7 +23,6 @@ draw_top_wall endp
 
 draw_bottom_wall proc near
 
-    ; wall color
     mov     al, wall_color
 
     mov     bx, 0
@@ -46,7 +44,6 @@ draw_bottom_wall endp
 
 draw_left_wall proc near
 
-    ; wall color
     mov     al, wall_color
 
     mov     bx, 20
@@ -68,7 +65,6 @@ draw_left_wall endp
 
 draw_right_wall proc near
 
-    ; wall color
     mov     al, wall_color
 
     mov     bx, 20
@@ -111,3 +107,5 @@ wall_check proc near
     ret
 
 wall_check endp
+
+
