@@ -14,38 +14,30 @@ handle_keyboard proc near
 
 @@maybe_j:
     ; j is for down
-    ; head_dx = 0 && head_dy = 1
     cmp     ah, 24h
     jne     @@maybe_k
-    mov     head_dx, 0
-    mov     head_dy, 1
+    call    change_dir_down
     jmp     @@check
 
 @@maybe_k:
     ; k is for up
-    ; head_dx = 0 && head_dy = -1
     cmp     ah, 25h
     jne     @@maybe_h
-    mov     head_dx, 0
-    mov     head_dy, -1
+    call    change_dir_up
     jmp     @@check
 
 @@maybe_h:
     ; h is for left
-    ; head_dx = -1 && head_dy = 0
     cmp     ah, 23h
     jne     @@maybe_l
-    mov     head_dx, -1
-    mov     head_dy, 0
+    call    change_dir_left
     jmp     @@check
 
 @@maybe_l:
-    ; l is for left
-    ; head_dx = 1 && head_dy = 0
+    ; l is for right
     cmp     ah, 26h
     jne     @@maybe_plus
-    mov     head_dx, 1
-    mov     head_dy, 0
+    call    change_dir_right
     jmp     @@check
 
 @@maybe_plus:

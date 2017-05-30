@@ -122,6 +122,62 @@ filling_loop:
 draw_cell endp
 
 
+draw_head proc near
+
+    push    bx
+    push    cx
+    push    dx
+
+    mov     al, snake_color
+    call    draw_cell
+
+    mov     bx, 8
+    mov     cell_size, bx
+    mov     al, head_color
+    add     cx, 1
+    add     dx, 1
+    call    draw_cell
+
+    mov     bx, 10
+    mov     cell_size, bx
+
+    pop     dx
+    pop     cx
+    pop     bx
+
+    ret
+
+draw_head endp
+
+
+draw_body proc near
+
+    push    bx
+    push    cx
+    push    dx
+
+    mov     al, snake_color
+    call    draw_cell
+
+    mov     bx, 4
+    mov     cell_size, bx
+    mov     al, body_color
+    add     cx, 3
+    add     dx, 3
+    call    draw_cell
+
+    mov     bx, 10
+    mov     cell_size, bx
+
+    pop     dx
+    pop     cx
+    pop     bx
+
+    ret
+
+draw_body endp
+
+
 empty_cell proc near
 
     push    ax

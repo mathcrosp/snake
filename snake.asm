@@ -25,7 +25,10 @@ locals
 
     cell_size       dw  10
 
-    snake_color     db  14
+    head_color      db  ?
+    body_color      db  ?
+    snake_color     db  11
+    text_color      db  14
     wall_color      db  4
 
     delay       dd  400000
@@ -106,6 +109,12 @@ prepare_map endp
 
 
 prepare_snake proc near
+
+    mov     cl, snake_color
+    sub     cl, 2
+    mov     head_color, cl
+    sub     cl, 7fh
+    mov     body_color, cl
 
     mov     cx, start_head_x
     mov     dx, start_head_y
@@ -247,7 +256,7 @@ draw_snake proc near
     mov     dx, snake_ys[bx]
     push    bx
     mov     al, snake_color
-    call    draw_cell
+    call    draw_body
     pop     bx
     add     bx, 2
     jmp     @@draw_loop
@@ -255,8 +264,7 @@ draw_snake proc near
 @@exit:
     mov     cx, snake_xs[0]
     mov     dx, snake_ys[0]
-    mov     al, snake_color
-    call    draw_cell
+    call    draw_head
 
     pop     dx
     pop     cx
@@ -318,6 +326,54 @@ dec_speed proc near
 dec_speed endp
 
 
+change_dir_down proc near
+
+    ; head_dx = 0 && head_dy = 1
+    mov     head_dx, 0
+    mov     head_dy, 1
+
+@@exit:
+    ret
+
+change_dir_down endp
+
+
+change_dir_up proc near
+
+    ; head_dx = 0 && head_dy = -1
+    mov     head_dx, 0
+    mov     head_dy, -1
+
+@@exit:
+    ret
+
+change_dir_up endp
+
+
+change_dir_right proc near
+
+    ; head_dx = -1 && head_dy = 0
+    mov     head_dx, 1
+    mov     head_dy, 0
+
+@@exit:
+    ret
+
+change_dir_right endp
+
+
+change_dir_left proc near
+
+    ; head_dx = 1 && head_dy = 0
+    mov     head_dx, -1
+    mov     head_dy, 0
+
+@@exit:
+    ret
+
+change_dir_left endp
+
+
 game_over proc near
 
     mov     dh, 12
@@ -334,7 +390,7 @@ game_over proc near
     mov     dl, al
 
     mov     bh, curr_page
-    mov     bl, snake_color
+    mov     bl, text_color
     mov     al, 1
     mov     ah, 13h
     int     10h
