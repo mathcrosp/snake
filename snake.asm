@@ -7,12 +7,17 @@ locals
 
     max_len     equ  30
     curr_len    dw  16
+    food_count  dw  8
 
     start_head_x    equ  100
     start_head_y    equ  120
 
     snake_xs    dw  max_len*2 dup(start_head_x)
     snake_ys    dw  max_len*2 dup(start_head_y)
+
+    food_xs     dw  30, 140, 170, 560
+    food_ys     dw  80, 140, 30, 60
+    food_found  dw  4 dup(0)
 
     head_x      dw  ?
     head_y      dw  ?
@@ -25,8 +30,9 @@ locals
 
     cell_size       dw  10
 
-    head_color      db  ?
     body_color      db  ?
+    food_color      db  2
+    head_color      db  ?
     snake_color     db  11
     text_color      db  14
     wall_color      db  4
@@ -104,6 +110,7 @@ prepare_map proc near
     call    draw_bottom_wall
     call    draw_left_wall
     call    draw_right_wall
+    call    draw_food
 
     ret
 
@@ -333,6 +340,35 @@ empty_tail proc near
     ret
 
 empty_tail endp
+
+
+draw_food proc near
+
+    push    bx
+    push    cx
+    push    dx
+
+    mov     bx, 0
+
+@@drawing_loop:
+    cmp     bx, [food_count]
+    je      @@exit
+    mov     cx, food_xs[bx]
+    mov     dx, food_ys[bx]
+    mov     al, food_color
+    call    draw_cell
+    add     bx, 2
+    jmp     @@drawing_loop
+
+@@exit:
+
+    pop     dx
+    pop     cx
+    pop     bx
+
+    ret
+
+draw_food endp
 
 
 set_snake_color proc near
