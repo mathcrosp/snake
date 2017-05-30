@@ -1,5 +1,6 @@
 .model tiny
 locals
+.386
 
 
 .data
@@ -10,8 +11,15 @@ locals
     start_head_x    equ  100
     start_head_y    equ  120
 
+    snake_xs        dw  max_len*2 dup(start_head_x)
+    snake_ys        dw  max_len*2 dup(start_head_y)
+
     head_x          dw  ?
     head_y          dw  ?
+
+    tail_x          dw  ?
+    tail_y          dw  ?
+
     head_dx         dw  1
     head_dy         dw  0
 
@@ -25,6 +33,7 @@ locals
     max_delay       dd  1200000
 
     game_over_msg   db  "GAME OVER", 0dh, 0ah, 24h
+    cli_help_msg    db  "snake.com [/c N] [/h]", 0dh, 0ah, 24h
 
 
 .code
@@ -33,12 +42,14 @@ locals
 
 start:
     jmp     main
+    include argparse.asm
     include graphics.asm
     include keyboard.asm
     include sound.asm
     include wall.asm
 
 main:
+    call    parse_args
     call    store_mode_n_page
     call    set_mode_n_page
 
@@ -61,49 +72,25 @@ main_loop proc near
 main_loop endp
 
 
-move_snake proc near
+init_snake proc near
 
-    call    move_head
-    call    step_beep
+    mov		head_x, start_head_x
+    mov		head_y, start_head_y
+    mov		bx, 0
 
+@@fill:
+    cmp		bx, curr_len
+    je		@@exit
+    mov		dx, snake_ys[bx]
+    add		dx, [cell_size]
+    add		bx, 2
+    mov		snake_ys[bx], dx
+    jmp		@@fill
+
+@@exit:
     ret
 
-move_snake endp
-
-
-move_head proc near
-
-    ; empty old position
-    mov     cx, head_x
-    mov     dx, head_y
-
-    call    empty_cell
-
-    ; fill new position
-    mov     cx, head_x
-    mov     bx, cell_size
-    mov     ax, head_dx
-    imul    bl
-    add     cx, ax
-    mov     head_x, cx
-
-    mov     cx, head_y
-    mov     bx, cell_size
-    mov     ax, head_dy
-    imul    bl
-    add     cx, ax
-    mov     head_y, cx
-
-    mov     cx, head_x
-    mov     dx, head_y
-    call    wall_check
-
-    mov     al, snake_color
-    call    draw_cell
-
-    ret
-
-move_head endp
+init_snake endp
 
 
 prepare_map proc near
@@ -128,11 +115,179 @@ prepare_snake proc near
 
     mov     al, snake_color
 
-    call    draw_cell
+    call    init_snake
+    call    draw_snake
 
     ret
 
 prepare_snake endp
+
+
+move_snake proc near
+
+    call    empty_tail
+    call    update_coords
+    call    draw_snake
+    call    step_beep
+
+    ret
+
+move_snake endp
+
+
+update_coords proc near
+
+    call    update_head
+    call    update_array
+    call    update_tail
+
+    ret
+
+update_coords endp
+
+
+update_head proc near
+
+    push    ax
+    push    bx
+    push    cx
+    push    dx
+
+    mov     cx, head_x
+    mov     bx, cell_size
+    mov     ax, head_dx
+    imul    bl
+    add     cx, ax
+    mov     head_x, cx
+
+    mov     cx, head_y
+    mov     bx, cell_size
+    mov     ax, head_dy
+    imul    bl
+    add     cx, ax
+    mov     head_y, cx
+
+    mov     cx, head_x
+    mov     dx, head_y
+    call    wall_check
+
+    pop     dx
+    pop     cx
+    pop     bx
+    pop     ax
+
+    ret
+
+update_head endp
+
+
+update_array proc near
+
+    mov     bx, curr_len
+
+@@filling_loop:
+    cmp		bx, 0
+    je	   	@@write_head
+    sub		bx, 2
+    mov		cx, snake_xs[bx]
+    mov		dx, snake_ys[bx]
+    add		bx, 2
+    mov		snake_xs[bx], cx
+    mov		snake_ys[bx], dx
+    sub		bx, 2
+    jmp		@@filling_loop
+
+@@write_head:
+    mov     cx, head_x
+    mov     dx, head_y
+
+    mov     bx, 0
+    mov		snake_xs[bx], cx
+    mov		snake_ys[bx], dx
+
+    ret
+
+update_array endp
+
+
+update_tail proc near
+
+    push    bx
+    push    cx
+    push    dx
+
+    mov     bx, curr_len
+    mov     cx, snake_xs[bx]
+    mov     dx, snake_ys[bx]
+
+    mov     tail_x, cx
+    mov     tail_y, dx
+
+    pop     dx
+    pop     cx
+    pop     bx
+
+    ret
+
+update_tail endp
+
+
+draw_snake proc near
+
+    push    bx
+    push    cx
+    push    dx
+
+    mov		bx, 0
+
+@@draw_loop:
+    cmp		bx, [curr_len]
+    je		@@exit
+    mov		cx, snake_xs[bx]
+    mov		dx, snake_ys[bx]
+    push	bx
+    mov     al, snake_color
+    call	draw_cell
+    pop		bx
+    add		bx, 2
+    jmp 	@@draw_loop
+
+@@exit:
+    mov		cx, snake_xs[0]
+    mov		dx, snake_ys[0]
+    mov     al, snake_color
+    call	draw_cell
+
+    pop     dx
+    pop     cx
+    pop     bx
+
+    ret
+
+draw_snake endp
+
+
+empty_tail proc near
+
+    mov     cx, tail_x
+    mov     dx, tail_y
+    call    empty_cell
+
+    ret
+
+empty_tail endp
+
+
+set_snake_color proc near
+
+    lodsb
+    lodsb
+
+    mov     snake_color, al
+
+    ret
+
+set_snake_color endp
 
 
 inc_speed proc near
@@ -183,6 +338,8 @@ game_over proc near
     mov		al, 1
     mov		ah, 13h
     int 	10h
+
+    call    game_over_beep
 
     call    wait_for_key
 

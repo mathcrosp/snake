@@ -1,5 +1,15 @@
 
 
+key_beep proc near
+
+    mov     ah, 11h
+    call    beep
+
+    ret
+
+key_beep endp
+
+
 step_beep proc near
 
     mov     ah, 10h
@@ -10,15 +20,46 @@ step_beep proc near
 step_beep endp
 
 
+game_over_beep proc near
+
+    mov     ah, 09h
+    call    long_beep
+
+    mov     ah, 11h
+    call    long_beep
+
+    mov     ah, 12h
+    call    long_beep
+
+game_over_beep endp
+
+
 beep proc near
 
     call    turn_on
+
+    mov     cx, 800
     call    set_freq
+
     call    turn_off
 
     ret
 
 beep endp
+
+
+long_beep proc near
+
+    call    turn_on
+
+    mov     cx, 9600
+    call    set_freq
+
+    call    turn_off
+
+    ret
+
+long_beep endp
 
 
 set_freq proc near
@@ -41,7 +82,8 @@ set_freq proc near
     mov     bx, 25
 
 @@pause1:
-    mov     cx, 800
+    pop     cx
+    push    cx
 
 @@pause2:
     dec     cx

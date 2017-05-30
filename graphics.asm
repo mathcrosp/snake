@@ -97,13 +97,13 @@ set_cx:
     pop		cx
     push	cx
 
-cell_fill_loop:
+filling_loop:
     call	draw_pixel
 
     inc		cx
     mov		bx, [end_x]
     cmp		cx, bx
-    jne		cell_fill_loop
+    jne		filling_loop
 
     inc		dx
     mov		bx, [end_y]

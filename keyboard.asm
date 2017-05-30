@@ -8,6 +8,7 @@ handle_keyboard proc near
     int     16h
     jz      @@exit
 
+    call    key_beep
     xor     ax, ax
     int     16h
 
