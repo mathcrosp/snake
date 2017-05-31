@@ -46,7 +46,13 @@ locals
     game_over_msg   db  "GAME OVER", 0dh, 0ah, 24h
     pause_msg       db  "PAUSE", 0dh, 0ah, 24h
     score_msg       db  "Score: ", 0dh, 0ah, 24h
-    cli_help_msg    db  "snake.com [/c N] [/h]", 0dh, 0ah, 24h
+
+    cli_help_msg    db  "snake.com [/c N] [/l N] [/f N] [/h]", 0dh, 0ah
+                    db  "    ---------------------------    ", 0dh, 0ah
+                    db  " /c is for color:  0-f ", 0dh, 0ah
+                    db  " /l is for length: 2-9 ", 0dh, 0ah
+                    db  " /f is for food:   1-9 ", 0dh, 0ah
+                    db  " /h is for help ", 0dh, 0ah, 24h
 
     help_msg        db  "                             h     j       k    l     ", 0dh, 0ah
                     db  "                           right  left   down   up    ", 0dh, 0ah
