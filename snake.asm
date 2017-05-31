@@ -468,6 +468,45 @@ set_die_on_cut proc near
 set_die_on_cut endp
 
 
+set_food_count proc near
+
+    push    ax
+
+    lodsb
+    lodsb
+
+    sub     al, 30h
+    shl     al, 1
+    xor     ah, ah
+    mov     food_count, ax
+
+    pop     ax
+
+    ret
+
+set_food_count endp
+
+
+set_len proc near
+
+    push    ax
+
+    lodsb
+    lodsb
+
+    sub     al, 30h
+    xor     ah, ah
+    shl     al, 1
+    sub     al, 2
+    mov     curr_len, ax
+
+    pop     ax
+
+    ret
+
+set_len endp
+
+
 change_dir_down proc near
 
     push    ax
@@ -593,7 +632,6 @@ pause proc near
 
 @@continue:
     call    draw_snake
-    call    pause_beep
 
     ret
 

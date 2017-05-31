@@ -53,8 +53,28 @@ parse_args proc near
 
 @@next_5:
     cmp     al, 64h ; d: die
-    jne     @@next_l
+    jne     @@next_6
     call    set_die_on_cut
+
+@@next_6:
+    cmp     al, 4ch ; L: len
+    jne     @@next_7
+    call    set_len
+
+@@next_7:
+    cmp     al, 6ch ; l: len
+    jne     @@next_8
+    call    set_len
+
+@@next_8:
+    cmp     al, 46h ; F: food
+    jne     @@next_9
+    call    set_food_count
+
+@@next_9:
+    cmp     al, 66h ; f: food
+    jne     @@next_l
+    call    set_food_count
 
 @@next_l:
     loop    @@arg_processing

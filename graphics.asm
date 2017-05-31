@@ -191,12 +191,16 @@ draw_food proc near
     je      @@exit
 
     cmp     food_found[bx], 0
-    jne     @@drawing_loop
+    jne     @@inc_bx
 
     mov     cx, food_xs[bx]
     mov     dx, food_ys[bx]
     mov     al, food_color
     call    draw_cell
+    add     bx, 2
+    jmp     @@drawing_loop
+
+@@inc_bx:
     add     bx, 2
     jmp     @@drawing_loop
 

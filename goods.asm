@@ -1,8 +1,8 @@
 
 
-    food_xs     dw  30, 140, 170, 560, 340, 360, 380
-    food_ys     dw  80, 140, 30, 60, 30, 40, 30
-    food_found  dw  7 dup(0)
+    food_xs     dw  30, 140, 170, 560, 340, 360, 380, 410, 440, 450, 400, 90, 90, 550
+    food_ys     dw  80, 140, 30, 60, 30, 40, 30, 110, 80, 60, 100, 90, 50, 70
+    food_found  dw  14 dup(0)
 
     pois_xs     dw  50, 110, 70
     pois_ys     dw  80, 110, 130
@@ -40,6 +40,7 @@ food_check proc near
 @@found:
     mov     cx, 1
     mov     food_found[bx], cx
+    call    food_beep
     mov     cx, food_xs[bx]
     mov     dx, food_ys[bx]
     call    update_coords
@@ -86,6 +87,7 @@ pois_check proc near
 @@found:
     mov     cx, 1
     mov     pois_found[bx], cx
+    call    pois_beep
     mov     cx, pois_xs[bx]
     mov     dx, pois_ys[bx]
     call    shorten
