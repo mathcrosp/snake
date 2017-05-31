@@ -8,6 +8,8 @@ locals
     max_len     equ  30
     curr_len    dw  6
 
+    score       db  ?
+
     food_count  dw  14
     pois_count  dw  6
 
@@ -43,6 +45,7 @@ locals
 
     game_over_msg   db  "GAME OVER", 0dh, 0ah, 24h
     pause_msg       db  "PAUSE", 0dh, 0ah, 24h
+    score_msg       db  "Score: ", 0dh, 0ah, 24h
     cli_help_msg    db  "snake.com [/c N] [/h]", 0dh, 0ah, 24h
 
 
@@ -76,6 +79,7 @@ main_loop proc near
 @@game_loop:
     call    handle_keyboard
     call    move_snake
+    call    show_score
     call    wait
     jmp     @@game_loop
 
@@ -627,6 +631,75 @@ game_over proc near
     ret
 
 game_over endp
+
+
+show_score proc near
+
+    push    ax
+    push    bx
+    push    cx
+    push    dx
+
+    mov     dl, 0
+    mov     dh, 0
+    lea     bp, score_msg
+    mov     cx, 7
+    mov     bh, 0
+    mov     bl, text_color
+    mov     al, 1
+    mov     ah, 13h
+    int     10h
+
+    mov     bx, curr_len
+    add     bx, 2
+    shr     bx, 1
+    mov     ax, 10
+    mul     bx
+    mov     score, al
+
+    mov     al, score
+    mov     cl, 0
+    mov     bl, 10
+
+@@1:
+    inc     cl
+    mov     ah, 0
+    div     bl
+    mov     dl, ah
+    push    dx
+    cmp     al, 0
+    jne     @@1
+
+@@2:
+    dec     cl
+    pop     dx
+    push    cx
+    mov     al, dl
+    add     al, 30h
+    mov     ah, 09h
+    mov     bh, 0
+    mov     cx, 1
+    mov     bl, text_color
+    int     10h
+
+    mov     ah, 03h
+    mov     bh, 0
+    int     10h
+    inc     dl
+    mov     ah, 02h
+    int     10h
+    pop     cx
+    cmp     cl, 0
+    jne     @@2
+
+    pop     dx
+    pop     cx
+    pop     bx
+    pop     ax
+
+    ret
+
+show_score endp
 
 
 wait proc near
