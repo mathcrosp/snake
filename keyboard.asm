@@ -43,8 +43,15 @@ handle_keyboard proc near
 @@maybe_p:
     ; p is for pause
     cmp     ah, 19h
-    jne     @@maybe_plus
+    jne     @@maybe_space
     call    pause
+    jmp     @@check
+
+@@maybe_space:
+    ; space is for help
+    cmp     ah, 39h
+    jne     @@maybe_plus
+    call    show_help
     jmp     @@check
 
 @@maybe_plus:

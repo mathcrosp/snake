@@ -48,6 +48,13 @@ locals
     score_msg       db  "Score: ", 0dh, 0ah, 24h
     cli_help_msg    db  "snake.com [/c N] [/h]", 0dh, 0ah, 24h
 
+    help_msg        db  "                             h     j       k    l     ", 0dh, 0ah
+                    db  "                           right  left   down   up    ", 0dh, 0ah
+                    db  "                          --------------------------- ", 0dh, 0ah
+                    db  "                             - slower     faster +    ", 0dh, 0ah
+                    db  "                          --------------------------- ", 0dh, 0ah
+                    db  "                            p pause       quit <C+c>  ", 0dh, 0ah, 24h
+
 
 .code
 
@@ -636,6 +643,37 @@ pause proc near
     ret
 
 pause endp
+
+
+show_help proc near
+
+    mov     dl, 0
+    mov     dh, 8
+    lea     bp, help_msg
+    mov     cx, 332
+
+    mov     ah, 0fh
+    int     10h
+
+    mov     ah, 05h
+    mov     al, 1
+    int     10h
+
+    mov     bh, 1
+    mov     bl, text_color
+    mov     al, 1
+    mov     ah, 13h
+    int     10h
+
+    call    wait_for_key
+
+    mov     ah, 05h
+    mov     al, curr_page
+    int     10h
+
+    ret
+
+show_help endp
 
 
 game_over proc near
