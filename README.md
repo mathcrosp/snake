@@ -1,11 +1,12 @@
 Snake
 =====
-A simple Snake game for DOS written in TASM. Yes, it contains lots of bugs.
+A simple Snake game for DOS written in TASM.
 
 How to build
 --------------
-You need `tasm` and `tlink` to build the game:
+You need a DOS machine with `tasm` and `tlink` to build the game:
 ```
+cd snake
 tasm snake.asm
 tlink /t /x snake.obj
 ```
