@@ -1,7 +1,7 @@
 
 
-    food_xs     dw  30, 140, 170, 560, 340, 360, 380, 410, 440, 450, 400, 90, 90, 550
-    food_ys     dw  80, 140, 30, 60, 30, 40, 30, 110, 80, 60, 100, 90, 50, 70
+    food_xs     dw  140, 560, 340, 380, 440, 450, 400, 90, 90, 550
+    food_ys     dw  140, 60, 30, 30, 110, 80, 100, 90, 300, 240
     food_found  dw  14 dup(0)
 
     pois_xs     dw  50, 110, 70
@@ -38,6 +38,9 @@ food_check proc near
     jmp     @@checking_loop
 
 @@found:
+    mov     cl, score
+    add     cl, 10
+    mov     score, cl
     mov     cx, 1
     mov     food_found[bx], cx
     call    food_beep
@@ -85,6 +88,10 @@ pois_check proc near
     jmp     @@checking_loop
 
 @@found:
+    call    score_check
+    mov     cl, score
+    sub     cl, 10
+    mov     score, cl
     mov     cx, 1
     mov     pois_found[bx], cx
     call    pois_beep

@@ -8,7 +8,7 @@ locals
     max_len     equ  30
     curr_len    dw  6
 
-    score       db  ?
+    score       db  0
 
     food_count  dw  14
     pois_count  dw  6
@@ -715,6 +715,18 @@ game_over proc near
 game_over endp
 
 
+score_check proc near
+
+    cmp     score, 0
+    jne     @@exit
+    call    game_over
+
+@@exit:
+    ret
+
+score_check endp
+
+
 show_score proc near
 
     push    ax
@@ -731,13 +743,6 @@ show_score proc near
     mov     al, 1
     mov     ah, 13h
     int     10h
-
-    mov     bx, curr_len
-    add     bx, 2
-    shr     bx, 1
-    mov     ax, 10
-    mul     bx
-    mov     score, al
 
     mov     al, score
     mov     cl, 0
