@@ -53,6 +53,7 @@ locals
 start:
     jmp     main
     include argparse.asm
+    include goods.asm
     include graphics.asm
     include keyboard.asm
     include sound.asm
