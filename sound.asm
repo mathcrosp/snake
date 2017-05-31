@@ -1,5 +1,25 @@
 
 
+food_beep proc near
+
+    mov     ah, 07h
+    call    beep
+
+    ret
+
+food_beep endp
+
+
+pois_beep proc near
+
+    mov     ah, 01h
+    call    long_beep
+
+    ret
+
+pois_beep endp
+
+
 key_beep proc near
 
     mov     ah, 11h
@@ -22,11 +42,17 @@ step_beep endp
 
 pause_beep proc near
 
+    mov     ah, 10h
+    call    beep
+
+    mov     ah, 10h
+    call    beep
+
     mov     ah, 09h
     call    long_beep
 
-    mov     ah, 06h
-    call    long_beep
+    mov     ah, 09h
+    call    beep
 
     ret
 
