@@ -51,6 +51,7 @@ locals
     die_on_cut      db  0
 
     game_over_msg   db  "GAME OVER", 0dh, 0ah, 24h
+    pause_msg       db  "PAUSE", 0dh, 0ah, 24h
     cli_help_msg    db  "snake.com [/c N] [/h]", 0dh, 0ah, 24h
 
 
@@ -72,6 +73,7 @@ main:
     call    set_mode_n_page
 
     call    prepare_map
+    call    prepare_goods
     call    prepare_snake
     call    main_loop
 
@@ -117,8 +119,6 @@ prepare_map proc near
     call    draw_bottom_wall
     call    draw_left_wall
     call    draw_right_wall
-    call    draw_food
-    call    draw_pois
 
     ret
 
@@ -139,6 +139,16 @@ prepare_snake proc near
     ret
 
 prepare_snake endp
+
+
+prepare_goods proc near
+
+    call    draw_food
+    call    draw_pois
+
+    ret
+
+prepare_goods endp
 
 
 move_snake proc near
@@ -286,8 +296,7 @@ cut_check proc near
     jmp     @@checking_loop
 
 @@cut:
-    mov     al, die_on_cut
-    cmp     al, 1
+    cmp     die_on_cut, 1
     je      @@die
     push    bx
 @@cutting_loop:
@@ -512,6 +521,10 @@ draw_food proc near
 @@drawing_loop:
     cmp     bx, [food_count]
     je      @@exit
+
+    cmp     food_found[bx], 0
+    jne     @@drawing_loop
+
     mov     cx, food_xs[bx]
     mov     dx, food_ys[bx]
     mov     al, food_color
@@ -700,6 +713,49 @@ change_dir_left proc near
     ret
 
 change_dir_left endp
+
+
+pause proc near
+
+    mov     dh, 12
+    lea     bp, pause_msg
+    mov     cx, 5
+
+    mov     ah, 0fh
+    int     10h
+
+    sub     ah, cl
+    shr     ax, 8
+    mov     bl, 2
+    div     bl
+    mov     dl, al
+
+    mov     bh, curr_page
+    mov     bl, text_color
+    mov     al, 1
+    mov     ah, 13h
+    int     10h
+
+    call    pause_beep
+
+    call    wait_for_key
+
+    mov     cx, 280
+    mov     dx, 170
+@@erase_text:
+    cmp     cx, 360
+    jge     @@continue
+    call    empty_cell
+    add     cx, 10
+    jmp     @@erase_text
+
+@@continue:
+    call    draw_snake
+    call    pause_beep
+
+    ret
+
+pause endp
 
 
 game_over proc near

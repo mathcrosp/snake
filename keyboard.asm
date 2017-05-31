@@ -36,8 +36,15 @@ handle_keyboard proc near
 @@maybe_l:
     ; l is for right
     cmp     ah, 26h
-    jne     @@maybe_plus
+    jne     @@maybe_p
     call    change_dir_right
+    jmp     @@check
+
+@@maybe_p:
+    ; p is for pause
+    cmp     ah, 19h
+    jne     @@maybe_plus
+    call    pause
     jmp     @@check
 
 @@maybe_plus:

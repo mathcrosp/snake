@@ -20,6 +20,19 @@ step_beep proc near
 step_beep endp
 
 
+pause_beep proc near
+
+    mov     ah, 09h
+    call    long_beep
+
+    mov     ah, 06h
+    call    long_beep
+
+    ret
+
+pause_beep endp
+
+
 game_over_beep proc near
 
     mov     ah, 09h
