@@ -6,8 +6,10 @@ locals
 .data
 
     max_len     equ  30
-    curr_len    dw  16
-    food_count  dw  8
+    curr_len    dw  6
+
+    food_count  dw  14
+    pois_count  dw  6
 
     start_head_x    equ  100
     start_head_y    equ  120
@@ -15,9 +17,13 @@ locals
     snake_xs    dw  max_len*2 dup(start_head_x)
     snake_ys    dw  max_len*2 dup(start_head_y)
 
-    food_xs     dw  30, 140, 170, 560
-    food_ys     dw  80, 140, 30, 60
-    food_found  dw  4 dup(0)
+    food_xs     dw  30, 140, 170, 560, 340, 360, 380
+    food_ys     dw  80, 140, 30, 60, 30, 40, 30
+    food_found  dw  7 dup(0)
+
+    pois_xs     dw  50, 110, 70
+    pois_ys     dw  80, 110, 130
+    pois_found  dw  3 dup(0)
 
     head_x      dw  ?
     head_y      dw  ?
@@ -33,6 +39,7 @@ locals
     body_color      db  ?
     food_color      db  2
     head_color      db  ?
+    pois_color      db  4
     snake_color     db  11
     text_color      db  14
     wall_color      db  4
@@ -111,6 +118,7 @@ prepare_map proc near
     call    draw_left_wall
     call    draw_right_wall
     call    draw_food
+    call    draw_pois
 
     ret
 
@@ -182,6 +190,7 @@ update_head proc near
     call    wall_check
     call    cut_check
     call    food_check
+    call    pois_check
 
     pop     dx
     pop     cx
@@ -356,6 +365,52 @@ food_check proc near
 food_check endp
 
 
+pois_check proc near
+
+    push    ax
+    push    bx
+    push    cx
+    push    dx
+
+    mov     bx, 0
+
+@@checking_loop:
+    cmp     bx, [pois_count]
+    je      @@exit
+    mov     cx, pois_xs[bx]
+    mov     dx, pois_ys[bx]
+    cmp     cx, head_x
+    jne     @@continue
+    cmp     dx, head_y
+    jne     @@continue
+    mov     ax, 0
+    cmp     pois_found[bx], ax
+    je      @@found
+@@continue:
+    add     bx, 2
+    jmp     @@checking_loop
+
+@@found:
+    mov     cx, 1
+    mov     pois_found[bx], cx
+    mov     cx, pois_xs[bx]
+    mov     dx, pois_ys[bx]
+    call    shorten
+    call    update_tail
+    call    empty_tail
+
+@@exit:
+
+    pop     dx
+    pop     cx
+    pop     bx
+    pop     ax
+
+    ret
+
+pois_check endp
+
+
 lengthen proc near
 
     push    ax
@@ -389,13 +444,14 @@ lengthen endp
 
 shorten proc near
 
-    push    ax
+    push    bx
 
-    mov     ax, curr_len
-    dec     ax
-    mov     curr_len, ax
 
-    pop     ax
+    mov     bx, curr_len
+    sub     bx, 2
+    mov     curr_len, bx
+
+    pop     bx
 
     ret
 
@@ -472,6 +528,35 @@ draw_food proc near
     ret
 
 draw_food endp
+
+
+draw_pois proc near
+
+    push    bx
+    push    cx
+    push    dx
+
+    mov     bx, 0
+
+@@drawing_loop:
+    cmp     bx, [pois_count]
+    je      @@exit
+    mov     cx, pois_xs[bx]
+    mov     dx, pois_ys[bx]
+    mov     al, pois_color
+    call    draw_cell
+    add     bx, 2
+    jmp     @@drawing_loop
+
+@@exit:
+
+    pop     dx
+    pop     cx
+    pop     bx
+
+    ret
+
+draw_pois endp
 
 
 set_snake_color proc near
