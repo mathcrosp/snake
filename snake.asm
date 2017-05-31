@@ -181,6 +181,7 @@ update_head proc near
     mov     dx, head_y
     call    wall_check
     call    cut_check
+    call    food_check
 
     pop     dx
     pop     cx
@@ -194,7 +195,12 @@ update_head endp
 
 update_array proc near
 
-    mov    bx, curr_len
+    push    ax
+    push    bx
+    push    cx
+    push    dx
+
+    mov     bx, curr_len
 
 @@filling_loop:
     cmp     bx, 0
@@ -215,6 +221,11 @@ update_array proc near
     mov     bx, 0
     mov     snake_xs[bx], cx
     mov     snake_ys[bx], dx
+
+    pop     dx
+    pop     cx
+    pop     bx
+    pop     ax
 
     ret
 
@@ -297,6 +308,98 @@ cut_check proc near
     call    game_over
 
 cut_check endp
+
+
+food_check proc near
+
+    push    ax
+    push    bx
+    push    cx
+    push    dx
+
+    mov     bx, 0
+
+@@checking_loop:
+    cmp     bx, [food_count]
+    je      @@exit
+    mov     cx, food_xs[bx]
+    mov     dx, food_ys[bx]
+    cmp     cx, head_x
+    jne     @@continue
+    cmp     dx, head_y
+    jne     @@continue
+    mov     ax, 0
+    cmp     food_found[bx], ax
+    je      @@found
+@@continue:
+    add     bx, 2
+    jmp     @@checking_loop
+
+@@found:
+    mov     cx, 1
+    mov     food_found[bx], cx
+    mov     cx, food_xs[bx]
+    mov     dx, food_ys[bx]
+    call    update_coords
+    call    lengthen
+    call    draw_snake
+
+@@exit:
+
+    pop     dx
+    pop     cx
+    pop     bx
+    pop     ax
+
+    ret
+
+food_check endp
+
+
+lengthen proc near
+
+    push    ax
+    push    bx
+    push    cx
+    push    dx
+
+    mov     bx, 0
+    mov     snake_xs[bx], cx
+    mov     snake_ys[bx], dx
+
+    mov     head_x, cx
+    mov     head_y, dx
+
+    call    update_head
+
+    mov     ax, curr_len
+    add     ax, 2
+    mov     curr_len, ax
+
+
+    pop     dx
+    pop     cx
+    pop     bx
+    pop     ax
+
+    ret
+
+lengthen endp
+
+
+shorten proc near
+
+    push    ax
+
+    mov     ax, curr_len
+    dec     ax
+    mov     curr_len, ax
+
+    pop     ax
+
+    ret
+
+shorten endp
 
 
 draw_snake proc near
