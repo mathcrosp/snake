@@ -5,7 +5,8 @@ A simple Snake game for DOS written in TASM. Yes, it contains lots of bugs.
 How to build
 --------------
 You need `tasm` and `tlink` to build the game:
-```tasm snake.asm
+```
+tasm snake.asm
 tlink /t /x snake.obj
 ```
 
