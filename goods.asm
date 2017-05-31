@@ -38,9 +38,9 @@ food_check proc near
     jmp     @@checking_loop
 
 @@found:
-    mov     cl, score
-    add     cl, 10
-    mov     score, cl
+    mov     cx, score
+    add     cx, 1
+    mov     score, cx
     mov     cx, 1
     mov     food_found[bx], cx
     call    food_beep
@@ -89,9 +89,9 @@ pois_check proc near
 
 @@found:
     call    score_check
-    mov     cl, score
-    sub     cl, 10
-    mov     score, cl
+    mov     cx, score
+    dec     cx
+    mov     score, cx
     mov     cx, 1
     mov     pois_found[bx], cx
     call    pois_beep
