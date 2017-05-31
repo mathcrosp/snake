@@ -357,7 +357,6 @@ lengthen proc near
     add     ax, 2
     mov     curr_len, ax
 
-
     pop     dx
     pop     cx
     pop     bx
