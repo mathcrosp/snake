@@ -88,7 +88,6 @@ pois_check proc near
     jmp     @@checking_loop
 
 @@found:
-    call    score_check
     mov     cx, score
     dec     cx
     mov     score, cx

@@ -718,18 +718,6 @@ game_over proc near
 game_over endp
 
 
-score_check proc near
-
-    cmp     score, 0
-    jne     @@exit
-    call    game_over
-
-@@exit:
-    ret
-
-score_check endp
-
-
 show_score proc near
 
     push    ax
